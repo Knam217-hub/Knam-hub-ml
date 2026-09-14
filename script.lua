@@ -1,12 +1,14 @@
 -- ==========================================
--- KNAM HUB V1 - FIXED LUA & MOBILE TOUCH
+-- KNAM HUB V1 - IMAGE ICON (FIX MOBIL/IPAD)
 -- ==========================================
 
 local Players = game:GetService("Players")
 local VirtualUser = game:GetService("VirtualUser")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local UserInputService = game:GetService("UserInputService")
 local LocalPlayer = Players.LocalPlayer
+
+-- THAY ID ẢNH ROBLEX CỦA BẠN VÀO GIỮA 2 DẤU NGOẶC KÉP DƯỚI ĐÂY:
+local ICON_IMAGE_ID = "rbxassetid://14421919280" 
 
 _G.AutoWeight = false
 _G.AutoRebirth = false
@@ -18,44 +20,47 @@ local KING_RADIUS = 700
 
 local ParentUI = (gethui and gethui()) or game:GetService("CoreGui") or LocalPlayer:WaitForChild("PlayerGui")
 
-if ParentUI:FindFirstChild("KNAMHubGuiV4") then
-    ParentUI.KNAMHubGuiV4:Destroy()
+if ParentUI:FindFirstChild("KNAMHubV8") then
+    ParentUI.KNAMHubV8:Destroy()
 end
 
 local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Name = "KNAMHubGuiV4"
+ScreenGui.Name = "KNAMHubV8"
 ScreenGui.ResetOnSpawn = false
-ScreenGui.DisplayOrder = 99999999
+ScreenGui.DisplayOrder = 2147483647
+ScreenGui.IgnoreGuiInset = true
 ScreenGui.Parent = ParentUI
 
-local IconBtn = Instance.new("TextButton")
-IconBtn.Name = "KNAMIcon"
-IconBtn.Size = UDim2.new(0, 55, 0, 55)
-IconBtn.Position = UDim2.new(0.02, 0, 0.25, 0)
-IconBtn.BackgroundColor3 = Color3.fromRGB(20, 20, 28)
-IconBtn.BorderSizePixel = 0
-IconBtn.Text = "KNAM"
-IconBtn.TextColor3 = Color3.fromRGB(0, 200, 255)
-IconBtn.Font = Enum.Font.FredokaOne
-IconBtn.TextSize = 15
-IconBtn.ZIndex = 999999
-IconBtn.Parent = ScreenGui
+-- NÚT CHỨA HÌNH LOGO KNAM (BẤM NHẠY TRÊN IPAD)
+local ToggleBtn = Instance.new("ImageButton")
+ToggleBtn.Name = "ToggleKNAM"
+ToggleBtn.Size = UDim2.new(0, 70, 0, 70)
+ToggleBtn.Position = UDim2.new(0, 15, 0.35, 0)
+ToggleBtn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+ToggleBtn.BackgroundTransparency = 0.2
+ToggleBtn.Image = ICON_IMAGE_ID
+ToggleBtn.Active = true
+ToggleBtn.Selectable = true
+ToggleBtn.ZIndex = 999999
+ToggleBtn.Parent = ScreenGui
 
-local IconCorner = Instance.new("UICorner", IconBtn)
-IconCorner.CornerRadius = UDim2.new(0, 14)
+local ToggleCorner = Instance.new("UICorner", ToggleBtn)
+ToggleCorner.CornerRadius = UDim2.new(0, 16)
 
-local IconStroke = Instance.new("UIStroke", IconBtn)
-IconStroke.Color = Color3.fromRGB(255, 50, 50)
-IconStroke.Thickness = 2.5
+local ToggleStroke = Instance.new("UIStroke", ToggleBtn)
+ToggleStroke.Color = Color3.fromRGB(0, 170, 255)
+ToggleStroke.Thickness = 2.5
 
+-- FRAME MENU CHÍNH
 local MainFrame = Instance.new("Frame")
 MainFrame.Name = "MainFrame"
-MainFrame.Size = UDim2.new(0, 310, 0, 380)
-MainFrame.Position = UDim2.new(0.5, -155, 0.5, -190)
-MainFrame.BackgroundColor3 = Color3.fromRGB(18, 18, 24)
+MainFrame.Size = UDim2.new(0, 300, 0, 360)
+MainFrame.Position = UDim2.new(0.5, -150, 0.5, -180)
+MainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 28)
 MainFrame.BorderSizePixel = 0
 MainFrame.Visible = true
-MainFrame.ZIndex = 99999
+MainFrame.Active = true
+MainFrame.ZIndex = 100000
 MainFrame.Parent = ScreenGui
 
 local MainCorner = Instance.new("UICorner", MainFrame)
@@ -65,117 +70,91 @@ local MainStroke = Instance.new("UIStroke", MainFrame)
 MainStroke.Color = Color3.fromRGB(0, 170, 255)
 MainStroke.Thickness = 2.5
 
-local function enableMobileDrag(frame)
-    local dragging, dragInput, dragStart, startPos
-
-    frame.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-            dragging = true
-            dragStart = input.Position
-            startPos = frame.Position
-
-            input.Changed:Connect(function()
-                if input.UserInputState == Enum.UserInputState.End then
-                    dragging = false
-                end
-            end)
-        end
-    end)
-
-    frame.InputChanged:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-            dragInput = input
-        end
-    end)
-
-    UserInputService.InputChanged:Connect(function(input)
-        if input == dragInput and dragging then
-            local delta = input.Position - dragStart
-            frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
-        end
-    end)
+local function toggleMenu()
+    MainFrame.Visible = not MainFrame.Visible
 end
 
-enableMobileDrag(IconBtn)
-enableMobileDrag(MainFrame)
+ToggleBtn.MouseButton1Click:Connect(toggleMenu)
+ToggleBtn.Activated:Connect(toggleMenu)
 
+-- TIÊU ĐỀ
 local Title = Instance.new("TextLabel")
-Title.Size = UDim2.new(1, -40, 0, 45)
+Title.Size = UDim2.new(1, -50, 0, 45)
 Title.Position = UDim2.new(0, 15, 0, 0)
 Title.BackgroundTransparency = 1
-Title.Text = "KNAM HUB - MUSCLE"
+Title.Text = "KNAM HUB V8"
 Title.TextColor3 = Color3.fromRGB(255, 60, 60)
 Title.Font = Enum.Font.FredokaOne
-Title.TextSize = 17
+Title.TextSize = 18
 Title.TextXAlignment = Enum.TextXAlignment.Left
-Title.ZIndex = 100000
+Title.ZIndex = 100001
 Title.Parent = MainFrame
 
-local MinimizeBtn = Instance.new("TextButton")
-MinimizeBtn.Size = UDim2.new(0, 32, 0, 32)
-MinimizeBtn.Position = UDim2.new(1, -38, 0, 7)
-MinimizeBtn.BackgroundColor3 = Color3.fromRGB(35, 35, 45)
-MinimizeBtn.Text = "-"
-MinimizeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-MinimizeBtn.Font = Enum.Font.SourceSansBold
-MinimizeBtn.TextSize = 22
-MinimizeBtn.ZIndex = 100000
-MinimizeBtn.Parent = MainFrame
+-- NÚT ĐÓNG (X)
+local CloseBtn = Instance.new("TextButton")
+CloseBtn.Size = UDim2.new(0, 32, 0, 32)
+CloseBtn.Position = UDim2.new(1, -40, 0, 7)
+CloseBtn.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
+CloseBtn.Text = "X"
+CloseBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+CloseBtn.Font = Enum.Font.SourceSansBold
+CloseBtn.TextSize = 18
+CloseBtn.ZIndex = 100001
+CloseBtn.Parent = MainFrame
 
-local MiniCorner = Instance.new("UICorner", MinimizeBtn)
-MiniCorner.CornerRadius = UDim2.new(0, 8)
+local CloseCorner = Instance.new("UICorner", CloseBtn)
+CloseCorner.CornerRadius = UDim2.new(0, 8)
 
-MinimizeBtn.Activated:Connect(function()
-    MainFrame.Visible = false
-end)
-
-IconBtn.Activated:Connect(function()
-    MainFrame.Visible = not MainFrame.Visible
-end)
+CloseBtn.MouseButton1Click:Connect(function() MainFrame.Visible = false end)
+CloseBtn.Activated:Connect(function() MainFrame.Visible = false end)
 
 local Container = Instance.new("Frame")
 Container.Size = UDim2.new(0.9, 0, 0.83, 0)
-Container.Position = UDim2.new(0.05, 0, 0.13, 0)
+Container.Position = UDim2.new(0.05, 0, 0.14, 0)
 Container.BackgroundTransparency = 1
-Container.ZIndex = 100000
+Container.ZIndex = 100001
 Container.Parent = MainFrame
 
 local UIListLayout = Instance.new("UIListLayout", Container)
 UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
-UIListLayout.Padding = UDim.new(0, 7)
+UIListLayout.Padding = UDim.new(0, 8)
 
-local function createToggleButton(text, callback)
+local function createToggle(text, callback)
     local btn = Instance.new("TextButton")
     btn.Size = UDim2.new(1, 0, 0, 42)
-    btn.BackgroundColor3 = Color3.fromRGB(35, 35, 45)
+    btn.BackgroundColor3 = Color3.fromRGB(35, 35, 48)
     btn.Text = text .. ": OFF"
     btn.TextColor3 = Color3.fromRGB(255, 90, 90)
     btn.Font = Enum.Font.SourceSansBold
     btn.TextSize = 14
-    btn.ZIndex = 100001
+    btn.ZIndex = 100002
+    btn.Active = true
     btn.Parent = Container
 
     local corner = Instance.new("UICorner", btn)
     corner.CornerRadius = UDim2.new(0, 8)
 
     local state = false
-    btn.Activated:Connect(function()
+    local function onClick()
         state = not state
         if state then
             btn.Text = text .. ": ON"
             btn.TextColor3 = Color3.fromRGB(80, 255, 120)
-            btn.BackgroundColor3 = Color3.fromRGB(25, 55, 35)
+            btn.BackgroundColor3 = Color3.fromRGB(25, 60, 35)
         else
             btn.Text = text .. ": OFF"
             btn.TextColor3 = Color3.fromRGB(255, 90, 90)
-            btn.BackgroundColor3 = Color3.fromRGB(35, 35, 45)
+            btn.BackgroundColor3 = Color3.fromRGB(35, 35, 48)
         end
         callback(state)
-    end)
+    end
+
+    btn.MouseButton1Click:Connect(onClick)
+    btn.Activated:Connect(onClick)
     return btn
 end
 
-local function createClickButton(text, color, callback)
+local function createButton(text, color, callback)
     local btn = Instance.new("TextButton")
     btn.Size = UDim2.new(1, 0, 0, 42)
     btn.BackgroundColor3 = color
@@ -183,22 +162,24 @@ local function createClickButton(text, color, callback)
     btn.TextColor3 = Color3.fromRGB(255, 255, 255)
     btn.Font = Enum.Font.SourceSansBold
     btn.TextSize = 14
-    btn.ZIndex = 100001
+    btn.ZIndex = 100002
+    btn.Active = true
     btn.Parent = Container
 
     local corner = Instance.new("UICorner", btn)
     corner.CornerRadius = UDim2.new(0, 8)
 
+    btn.MouseButton1Click:Connect(callback)
     btn.Activated:Connect(callback)
     return btn
 end
 
-createToggleButton("Auto Weight (Tập tạ)", function(state) _G.AutoWeight = state end)
-createToggleButton("Auto Rebirth Nhanh", function(state) _G.AutoRebirth = state end)
-createToggleButton("Auto Kill (Đấm gần)", function(state) _G.AutoKill = state end)
-createToggleButton("Auto Kill đảo King Muscle", function(state) _G.AutoKillKing = state end)
+createToggle("Auto Weight (Tập tạ)", function(s) _G.AutoWeight = s end)
+createToggle("Auto Rebirth Nhanh", function(s) _G.AutoRebirth = s end)
+createToggle("Auto Kill (Đấm gần)", function(s) _G.AutoKill = s end)
+createToggle("Auto Kill đảo King Muscle", function(s) _G.AutoKillKing = s end)
 
-createClickButton("Teleport tới King Muscle", Color3.fromRGB(0, 140, 230), function()
+createButton("Teleport tới King Muscle", Color3.fromRGB(0, 140, 230), function()
     pcall(function()
         if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
             LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-8626, 14, -5730)
@@ -281,4 +262,4 @@ task.spawn(function()
     end
 end)
 
-print("KNAM HUB V4 MOBILE LOADED!")
+print("KNAM HUB V8 LOADED!")
