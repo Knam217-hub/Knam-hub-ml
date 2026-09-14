@@ -1,5 +1,5 @@
 -- ==========================================
--- KNAM HUB V1 - IMAGE ICON (FIX MOBIL/IPAD)
+-- KNAM HUB V9 - AUTO DOWNLOAD LOGO IMAGE
 -- ==========================================
 
 local Players = game:GetService("Players")
@@ -7,8 +7,9 @@ local VirtualUser = game:GetService("VirtualUser")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local LocalPlayer = Players.LocalPlayer
 
--- THAY ID ẢNH ROBLEX CỦA BẠN VÀO GIỮA 2 DẤU NGOẶC KÉP DƯỚI ĐÂY:
-local ICON_IMAGE_ID = "rbxassetid://14421919280" 
+-- DÁN LINK DIRECT LINK TỪ POSTIMAGES VÀO DƯỚI ĐÂY:
+local LOGIC_IMAGE_URL = "<a href='https://postimg.cc/F1v15xgH' target='_blank'><img src='https://i.postimg.cc/F1v15xgH/IMG-2155.jpg' border='0' alt='IMG-2155'></a>"
+local LocalFileName = "knam_logo_v1.png"
 
 _G.AutoWeight = false
 _G.AutoRebirth = false
@@ -20,25 +21,40 @@ local KING_RADIUS = 700
 
 local ParentUI = (gethui and gethui()) or game:GetService("CoreGui") or LocalPlayer:WaitForChild("PlayerGui")
 
-if ParentUI:FindFirstChild("KNAMHubV8") then
-    ParentUI.KNAMHubV8:Destroy()
+if ParentUI:FindFirstChild("KNAMHubV9") then
+    ParentUI.KNAMHubV9:Destroy()
 end
 
 local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Name = "KNAMHubV8"
+ScreenGui.Name = "KNAMHubV9"
 ScreenGui.ResetOnSpawn = false
 ScreenGui.DisplayOrder = 2147483647
 ScreenGui.IgnoreGuiInset = true
 ScreenGui.Parent = ParentUI
 
--- NÚT CHỨA HÌNH LOGO KNAM (BẤM NHẠY TRÊN IPAD)
+-- HÀM TỰ TẢI ẢNH VỀ IPAD
+local function getLogoTexture()
+    if getcustomasset then
+        if not isfile(LocalFileName) then
+            pcall(function()
+                writefile(LocalFileName, game:HttpGet(LOGIC_IMAGE_URL))
+            end)
+        end
+        if isfile(LocalFileName) then
+            return getcustomasset(LocalFileName)
+        end
+    end
+    return ""
+end
+
+-- NÚT ICON LOGO KNAM
 local ToggleBtn = Instance.new("ImageButton")
 ToggleBtn.Name = "ToggleKNAM"
 ToggleBtn.Size = UDim2.new(0, 70, 0, 70)
 ToggleBtn.Position = UDim2.new(0, 15, 0.35, 0)
 ToggleBtn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-ToggleBtn.BackgroundTransparency = 0.2
-ToggleBtn.Image = ICON_IMAGE_ID
+ToggleBtn.BackgroundTransparency = 0.1
+ToggleBtn.Image = getLogoTexture()
 ToggleBtn.Active = true
 ToggleBtn.Selectable = true
 ToggleBtn.ZIndex = 999999
@@ -51,7 +67,7 @@ local ToggleStroke = Instance.new("UIStroke", ToggleBtn)
 ToggleStroke.Color = Color3.fromRGB(0, 170, 255)
 ToggleStroke.Thickness = 2.5
 
--- FRAME MENU CHÍNH
+-- MENU CHÍNH
 local MainFrame = Instance.new("Frame")
 MainFrame.Name = "MainFrame"
 MainFrame.Size = UDim2.new(0, 300, 0, 360)
@@ -77,12 +93,11 @@ end
 ToggleBtn.MouseButton1Click:Connect(toggleMenu)
 ToggleBtn.Activated:Connect(toggleMenu)
 
--- TIÊU ĐỀ
 local Title = Instance.new("TextLabel")
 Title.Size = UDim2.new(1, -50, 0, 45)
 Title.Position = UDim2.new(0, 15, 0, 0)
 Title.BackgroundTransparency = 1
-Title.Text = "KNAM HUB V8"
+Title.Text = "KNAM HUB V9"
 Title.TextColor3 = Color3.fromRGB(255, 60, 60)
 Title.Font = Enum.Font.FredokaOne
 Title.TextSize = 18
@@ -90,7 +105,6 @@ Title.TextXAlignment = Enum.TextXAlignment.Left
 Title.ZIndex = 100001
 Title.Parent = MainFrame
 
--- NÚT ĐÓNG (X)
 local CloseBtn = Instance.new("TextButton")
 CloseBtn.Size = UDim2.new(0, 32, 0, 32)
 CloseBtn.Position = UDim2.new(1, -40, 0, 7)
@@ -262,4 +276,4 @@ task.spawn(function()
     end
 end)
 
-print("KNAM HUB V8 LOADED!")
+print("KNAM HUB V9 LOADED SUCCESSFULLY!")
