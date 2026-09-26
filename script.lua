@@ -1,14 +1,9 @@
--- ==========================================
--- KNAM HUB V9 - AUTO DOWNLOAD LOGO IMAGE
--- ==========================================
-
 local Players = game:GetService("Players")
 local VirtualUser = game:GetService("VirtualUser")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local LocalPlayer = Players.LocalPlayer
 
--- DÁN LINK DIRECT LINK TỪ POSTIMAGES VÀO DƯỚI ĐÂY:
-local LOGIC_IMAGE_URL = "<a href='https://postimg.cc/F1v15xgH' target='_blank'><img src='https://i.postimg.cc/F1v15xgH/IMG-2155.jpg' border='0' alt='IMG-2155'></a>"
+local LOGIC_IMAGE_URL = "https://i.postimg.cc/YOUR_IMAGE_HERE.png"
 local LocalFileName = "knam_logo_v1.png"
 
 _G.AutoWeight = false
@@ -21,18 +16,17 @@ local KING_RADIUS = 700
 
 local ParentUI = (gethui and gethui()) or game:GetService("CoreGui") or LocalPlayer:WaitForChild("PlayerGui")
 
-if ParentUI:FindFirstChild("KNAMHubV9") then
-    ParentUI.KNAMHubV9:Destroy()
+if ParentUI:FindFirstChild("KNAMHubV1") then
+    ParentUI.KNAMHubV1:Destroy()
 end
 
 local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Name = "KNAMHubV9"
+ScreenGui.Name = "KNAMHubV1"
 ScreenGui.ResetOnSpawn = false
 ScreenGui.DisplayOrder = 2147483647
 ScreenGui.IgnoreGuiInset = true
 ScreenGui.Parent = ParentUI
 
--- HÀM TỰ TẢI ẢNH VỀ IPAD
 local function getLogoTexture()
     if getcustomasset then
         if not isfile(LocalFileName) then
@@ -47,7 +41,6 @@ local function getLogoTexture()
     return ""
 end
 
--- NÚT ICON LOGO KNAM
 local ToggleBtn = Instance.new("ImageButton")
 ToggleBtn.Name = "ToggleKNAM"
 ToggleBtn.Size = UDim2.new(0, 70, 0, 70)
@@ -67,7 +60,6 @@ local ToggleStroke = Instance.new("UIStroke", ToggleBtn)
 ToggleStroke.Color = Color3.fromRGB(0, 170, 255)
 ToggleStroke.Thickness = 2.5
 
--- MENU CHÍNH
 local MainFrame = Instance.new("Frame")
 MainFrame.Name = "MainFrame"
 MainFrame.Size = UDim2.new(0, 300, 0, 360)
@@ -97,7 +89,7 @@ local Title = Instance.new("TextLabel")
 Title.Size = UDim2.new(1, -50, 0, 45)
 Title.Position = UDim2.new(0, 15, 0, 0)
 Title.BackgroundTransparency = 1
-Title.Text = "KNAM HUB V9"
+Title.Text = "KNAM HUB V1"
 Title.TextColor3 = Color3.fromRGB(255, 60, 60)
 Title.Font = Enum.Font.FredokaOne
 Title.TextSize = 18
@@ -188,12 +180,12 @@ local function createButton(text, color, callback)
     return btn
 end
 
-createToggle("Auto Weight (Tập tạ)", function(s) _G.AutoWeight = s end)
-createToggle("Auto Rebirth Nhanh", function(s) _G.AutoRebirth = s end)
-createToggle("Auto Kill (Đấm gần)", function(s) _G.AutoKill = s end)
-createToggle("Auto Kill đảo King Muscle", function(s) _G.AutoKillKing = s end)
+createToggle("Auto Weight", function(s) _G.AutoWeight = s end)
+createToggle("Fast Auto Rebirth", function(s) _G.AutoRebirth = s end)
+createToggle("Auto Kill Nearby", function(s) _G.AutoKill = s end)
+createToggle("Auto Kill King Muscle Island", function(s) _G.AutoKillKing = s end)
 
-createButton("Teleport tới King Muscle", Color3.fromRGB(0, 140, 230), function()
+createButton("Teleport to King Muscle", Color3.fromRGB(0, 140, 230), function()
     pcall(function()
         if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
             LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-8626, 14, -5730)
@@ -276,4 +268,4 @@ task.spawn(function()
     end
 end)
 
-print("KNAM HUB V9 LOADED SUCCESSFULLY!")
+print("KNAM HUB V1 LOADED SUCCESSFULLY!")
