@@ -1,271 +1,217 @@
+-- KN HUB - Universal Roblox Script
+local OrionLib = loadstring(game:HttpGet('https://raw.githubusercontent.com/shlexware/Orion/main/source'))()
+local Window = OrionLib:MakeWindow({
+    Name = "KN HUB | Universal Game Script",
+    HidePremium = false,
+    SaveConfig = false,
+    IntroText = "KN HUB Loading..."
+})
+
 local Players = game:GetService("Players")
-local VirtualUser = game:GetService("VirtualUser")
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local RunService = game:GetService("RunService")
 local LocalPlayer = Players.LocalPlayer
+local Camera = workspace.CurrentCamera
 
-local LOGIC_IMAGE_URL = "https://i.postimg.cc/YOUR_IMAGE_HERE.png"
-local LocalFileName = "knam_logo_v1.png"
+-- Biến lưu trạng thái
+local speedVal = 16
+local jumpVal = 50
+local flyVal = 50
+local bypassEnabled = false
+local noclipEnabled = false
+local flyEnabled = false
+local fixLagEnabled = false
 
-_G.AutoWeight = false
-_G.AutoRebirth = false
-_G.AutoKill = false
-_G.AutoKillKing = false
-
-local KING_POS = Vector3.new(-8626, 14, -5730)
-local KING_RADIUS = 700
-
-local ParentUI = (gethui and gethui()) or game:GetService("CoreGui") or LocalPlayer:WaitForChild("PlayerGui")
-
-if ParentUI:FindFirstChild("KNAMHubV1") then
-    ParentUI.KNAMHubV1:Destroy()
-end
-
-local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Name = "KNAMHubV1"
-ScreenGui.ResetOnSpawn = false
-ScreenGui.DisplayOrder = 2147483647
-ScreenGui.IgnoreGuiInset = true
-ScreenGui.Parent = ParentUI
-
-local function getLogoTexture()
-    if getcustomasset then
-        if not isfile(LocalFileName) then
-            pcall(function()
-                writefile(LocalFileName, game:HttpGet(LOGIC_IMAGE_URL))
-            end)
-        end
-        if isfile(LocalFileName) then
-            return getcustomasset(LocalFileName)
-        end
-    end
-    return ""
-end
-
-local ToggleBtn = Instance.new("ImageButton")
-ToggleBtn.Name = "ToggleKNAM"
-ToggleBtn.Size = UDim2.new(0, 70, 0, 70)
-ToggleBtn.Position = UDim2.new(0, 15, 0.35, 0)
-ToggleBtn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-ToggleBtn.BackgroundTransparency = 0.1
-ToggleBtn.Image = getLogoTexture()
-ToggleBtn.Active = true
-ToggleBtn.Selectable = true
-ToggleBtn.ZIndex = 999999
-ToggleBtn.Parent = ScreenGui
-
-local ToggleCorner = Instance.new("UICorner", ToggleBtn)
-ToggleCorner.CornerRadius = UDim2.new(0, 16)
-
-local ToggleStroke = Instance.new("UIStroke", ToggleBtn)
-ToggleStroke.Color = Color3.fromRGB(0, 170, 255)
-ToggleStroke.Thickness = 2.5
-
-local MainFrame = Instance.new("Frame")
-MainFrame.Name = "MainFrame"
-MainFrame.Size = UDim2.new(0, 300, 0, 360)
-MainFrame.Position = UDim2.new(0.5, -150, 0.5, -180)
-MainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 28)
-MainFrame.BorderSizePixel = 0
-MainFrame.Visible = true
-MainFrame.Active = true
-MainFrame.ZIndex = 100000
-MainFrame.Parent = ScreenGui
-
-local MainCorner = Instance.new("UICorner", MainFrame)
-MainCorner.CornerRadius = UDim2.new(0, 14)
-
-local MainStroke = Instance.new("UIStroke", MainFrame)
-MainStroke.Color = Color3.fromRGB(0, 170, 255)
-MainStroke.Thickness = 2.5
-
-local function toggleMenu()
-    MainFrame.Visible = not MainFrame.Visible
-end
-
-ToggleBtn.MouseButton1Click:Connect(toggleMenu)
-ToggleBtn.Activated:Connect(toggleMenu)
-
-local Title = Instance.new("TextLabel")
-Title.Size = UDim2.new(1, -50, 0, 45)
-Title.Position = UDim2.new(0, 15, 0, 0)
-Title.BackgroundTransparency = 1
-Title.Text = "KNAM HUB V1"
-Title.TextColor3 = Color3.fromRGB(255, 60, 60)
-Title.Font = Enum.Font.FredokaOne
-Title.TextSize = 18
-Title.TextXAlignment = Enum.TextXAlignment.Left
-Title.ZIndex = 100001
-Title.Parent = MainFrame
-
-local CloseBtn = Instance.new("TextButton")
-CloseBtn.Size = UDim2.new(0, 32, 0, 32)
-CloseBtn.Position = UDim2.new(1, -40, 0, 7)
-CloseBtn.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
-CloseBtn.Text = "X"
-CloseBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-CloseBtn.Font = Enum.Font.SourceSansBold
-CloseBtn.TextSize = 18
-CloseBtn.ZIndex = 100001
-CloseBtn.Parent = MainFrame
-
-local CloseCorner = Instance.new("UICorner", CloseBtn)
-CloseCorner.CornerRadius = UDim2.new(0, 8)
-
-CloseBtn.MouseButton1Click:Connect(function() MainFrame.Visible = false end)
-CloseBtn.Activated:Connect(function() MainFrame.Visible = false end)
-
-local Container = Instance.new("Frame")
-Container.Size = UDim2.new(0.9, 0, 0.83, 0)
-Container.Position = UDim2.new(0.05, 0, 0.14, 0)
-Container.BackgroundTransparency = 1
-Container.ZIndex = 100001
-Container.Parent = MainFrame
-
-local UIListLayout = Instance.new("UIListLayout", Container)
-UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
-UIListLayout.Padding = UDim.new(0, 8)
-
-local function createToggle(text, callback)
-    local btn = Instance.new("TextButton")
-    btn.Size = UDim2.new(1, 0, 0, 42)
-    btn.BackgroundColor3 = Color3.fromRGB(35, 35, 48)
-    btn.Text = text .. ": OFF"
-    btn.TextColor3 = Color3.fromRGB(255, 90, 90)
-    btn.Font = Enum.Font.SourceSansBold
-    btn.TextSize = 14
-    btn.ZIndex = 100002
-    btn.Active = true
-    btn.Parent = Container
-
-    local corner = Instance.new("UICorner", btn)
-    corner.CornerRadius = UDim2.new(0, 8)
-
-    local state = false
-    local function onClick()
-        state = not state
-        if state then
-            btn.Text = text .. ": ON"
-            btn.TextColor3 = Color3.fromRGB(80, 255, 120)
-            btn.BackgroundColor3 = Color3.fromRGB(25, 60, 35)
-        else
-            btn.Text = text .. ": OFF"
-            btn.TextColor3 = Color3.fromRGB(255, 90, 90)
-            btn.BackgroundColor3 = Color3.fromRGB(35, 35, 48)
-        end
-        callback(state)
-    end
-
-    btn.MouseButton1Click:Connect(onClick)
-    btn.Activated:Connect(onClick)
-    return btn
-end
-
-local function createButton(text, color, callback)
-    local btn = Instance.new("TextButton")
-    btn.Size = UDim2.new(1, 0, 0, 42)
-    btn.BackgroundColor3 = color
-    btn.Text = text
-    btn.TextColor3 = Color3.fromRGB(255, 255, 255)
-    btn.Font = Enum.Font.SourceSansBold
-    btn.TextSize = 14
-    btn.ZIndex = 100002
-    btn.Active = true
-    btn.Parent = Container
-
-    local corner = Instance.new("UICorner", btn)
-    corner.CornerRadius = UDim2.new(0, 8)
-
-    btn.MouseButton1Click:Connect(callback)
-    btn.Activated:Connect(callback)
-    return btn
-end
-
-createToggle("Auto Weight", function(s) _G.AutoWeight = s end)
-createToggle("Fast Auto Rebirth", function(s) _G.AutoRebirth = s end)
-createToggle("Auto Kill Nearby", function(s) _G.AutoKill = s end)
-createToggle("Auto Kill King Muscle Island", function(s) _G.AutoKillKing = s end)
-
-createButton("Teleport to King Muscle", Color3.fromRGB(0, 140, 230), function()
-    pcall(function()
-        if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
-            LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-8626, 14, -5730)
-        end
-    end)
-end)
-
-LocalPlayer.Idled:Connect(function()
-    VirtualUser:CaptureController()
-    VirtualUser:ClickButton2(Vector2.new(0, 0))
-end)
-
-task.spawn(function()
-    while task.wait(0.01) do
-        if _G.AutoWeight then
-            pcall(function()
-                local weight = LocalPlayer.Backpack:FindFirstChild("Weight") or LocalPlayer.Character:FindFirstChild("Weight")
-                if weight then
-                    LocalPlayer.Character.Humanoid:EquipTool(weight)
-                    weight:Activate()
-                end
-                local weightEvent = ReplicatedStorage:FindFirstChild("rEvents") and ReplicatedStorage.rEvents:FindFirstChild("weightEvent")
-                if weightEvent then weightEvent:FireServer() end
-            end)
-        end
-    end
-end)
-
-task.spawn(function()
-    while task.wait(0.01) do
-        if _G.AutoRebirth then
-            pcall(function()
-                local rebirthEvent = ReplicatedStorage:FindFirstChild("rEvents") and ReplicatedStorage.rEvents:FindFirstChild("rebirthRemote")
-                if rebirthEvent then rebirthEvent:InvokeServer("rebirthRequest") end
-            end)
-        end
-    end
-end)
-
-task.spawn(function()
-    while task.wait(0.01) do
-        if _G.AutoKill then
-            pcall(function()
-                local punch = LocalPlayer.Backpack:FindFirstChild("Punch") or LocalPlayer.Character:FindFirstChild("Punch")
-                if punch then
-                    LocalPlayer.Character.Humanoid:EquipTool(punch)
-                    punch:Activate()
-                end
-                local punchEvent = ReplicatedStorage:FindFirstChild("rEvents") and ReplicatedStorage.rEvents:FindFirstChild("punchEvent")
-                if punchEvent then punchEvent:FireServer("punchClick") end
-            end)
-        end
-    end
-end)
-
-task.spawn(function()
-    while task.wait(0.05) do
-        if _G.AutoKillKing then
-            pcall(function()
-                for _, target in pairs(Players:GetPlayers()) do
-                    if target ~= LocalPlayer and target.Character and target.Character:FindFirstChild("HumanoidRootPart") and target.Character:FindFirstChild("Humanoid") and target.Character.Humanoid.Health > 0 then
-                        local targetPos = target.Character.HumanoidRootPart.Position
-                        local distanceToKing = (targetPos - KING_POS).Magnitude
-                        
-                        if distanceToKing <= KING_RADIUS then
-                            LocalPlayer.Character.HumanoidRootPart.CFrame = target.Character.HumanoidRootPart.CFrame * CFrame.new(0, 0, 2)
-                            local punch = LocalPlayer.Backpack:FindFirstChild("Punch") or LocalPlayer.Character:FindFirstChild("Punch")
-                            if punch then
-                                LocalPlayer.Character.Humanoid:EquipTool(punch)
-                                punch:Activate()
-                            end
-                            local punchEvent = ReplicatedStorage:FindFirstChild("rEvents") and ReplicatedStorage.rEvents:FindFirstChild("punchEvent")
-                            if punchEvent then punchEvent:FireServer("punchClick") end
-                            break
+-- 1. FIX LAG (Occlusion Culling & Low Render)
+local hiddenParts = {}
+local function startFixLag()
+    task.spawn(function()
+        while fixLagEnabled do
+            for _, part in pairs(workspace:GetDescendants()) do
+                if part:IsA("BasePart") and not part:IsDescendantOf(LocalPlayer.Character) and part.Transparency < 1 then
+                    local _, onScreen = Camera:WorldToViewportPoint(part.Position)
+                    if not onScreen then
+                        if hiddenParts[part] == nil then
+                            hiddenParts[part] = part.LocalTransparencyModifier
+                        end
+                        part.LocalTransparencyModifier = 1
+                    else
+                        if hiddenParts[part] ~= nil then
+                            part.LocalTransparencyModifier = hiddenParts[part]
                         end
                     end
                 end
-            end)
+            end
+            task.wait(0.2)
+        end
+    end)
+end
+
+local function stopFixLag()
+    for part, origTrans in pairs(hiddenParts) do
+        if part and part.Parent then
+            part.LocalTransparencyModifier = origTrans
+        end
+    end
+    table.clear(hiddenParts)
+end
+
+-- 2. NOCLIP (Đã chỉnh sửa: Không xuyên qua mặt đất dưới chân)
+RunService.Stepped:Connect(function()
+    if noclipEnabled and LocalPlayer.Character then
+        for _, part in pairs(LocalPlayer.Character:GetDescendants()) do
+            if part:IsA("BasePart") then
+                if part.Name == "HumanoidRootPart" then
+                    part.CanCollide = true
+                else
+                    part.CanCollide = false
+                end
+            end
         end
     end
 end)
 
-print("KNAM HUB V1 LOADED SUCCESSFULLY!")
+-- 3, 4, 5. SPEED, JUMP & BYPASS ANTI-CHEAT
+RunService.RenderStepped:Connect(function()
+    local char = LocalPlayer.Character
+    if char and char:FindFirstChildOfClass("Humanoid") then
+        local hum = char:FindFirstChildOfClass("Humanoid")
+        
+        if bypassEnabled then
+            hum.WalkSpeed = speedVal
+            hum.UseJumpPower = true
+            hum.JumpPower = jumpVal
+            
+            if hum.MoveDirection.Magnitude > 0 then
+                char:TranslateBy(hum.MoveDirection * (speedVal / 50) * 0.1)
+            end
+        else
+            hum.WalkSpeed = speedVal
+            hum.UseJumpPower = true
+            hum.JumpPower = jumpVal
+        end
+    end
+end)
+
+-- 6. TELEPORT TOOL
+local function giveTPTool()
+    local tool = Instance.new("Tool")
+    tool.Name = "Teleport Tool (KN HUB)"
+    tool.RequiresHandle = false
+    
+    tool.Activated:Connect(function()
+        local mouse = LocalPlayer:GetMouse()
+        if mouse.Hit and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+            LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(mouse.Hit.Position + Vector3.new(0, 3, 0))
+        end
+    end)
+    
+    tool.Parent = LocalPlayer.Backpack
+end
+
+-- 7. FLY (BAY)
+local bv, bg
+local function toggleFly(state)
+    flyEnabled = state
+    local char = LocalPlayer.Character
+    if not char or not char:FindFirstChild("HumanoidRootPart") then return end
+    local hrp = char.HumanoidRootPart
+
+    if flyEnabled then
+        bv = Instance.new("BodyVelocity")
+        bv.MaxForce = Vector3.new(1e9, 1e9, 1e9)
+        bv.Velocity = Vector3.zero
+        bv.Parent = hrp
+
+        bg = Instance.new("BodyGyro")
+        bg.MaxTorque = Vector3.new(1e9, 1e9, 1e9)
+        bg.P = 9e4
+        bg.CFrame = hrp.CFrame
+        bg.Parent = hrp
+
+        task.spawn(function()
+            while flyEnabled and char and hrp do
+                local hum = char:FindFirstChildOfClass("Humanoid")
+                local moveDir = hum and hum.MoveDirection or Vector3.zero
+                
+                bg.CFrame = Camera.CFrame
+                if moveDir.Magnitude > 0 then
+                    bv.Velocity = (Camera.CFrame.LookVector * -moveDir.Z + Camera.CFrame.RightVector * moveDir.X).Unit * flyVal
+                else
+                    bv.Velocity = Vector3.new(0, 0.1, 0)
+                end
+                task.wait()
+            end
+        end)
+    else
+        if bv then bv:Destroy() end
+        if bg then bg:Destroy() end
+    end
+end
+
+---------------------------------------------------------
+-- GIAO DIỆN MENUS (TABS)
+---------------------------------------------------------
+
+-- TAB 1: PLAYER & MOVEMENT
+local MainTab = Window:MakeTab({Name = "Movement", Icon = "rbxassetid://4483345998", PremiumOnly = false})
+
+MainTab:AddSlider({
+    Name = "Speed Boost",
+    Min = 1, Max = 1000, Default = 16, Color = Color3.fromRGB(255,255,255), Increment = 1, ValueName = "Speed",
+    Callback = function(Value) speedVal = Value end
+})
+
+MainTab:AddSlider({
+    Name = "Jump Boost",
+    Min = 1, Max = 1000, Default = 50, Color = Color3.fromRGB(255,255,255), Increment = 1, ValueName = "Power",
+    Callback = function(Value) jumpVal = Value end
+})
+
+MainTab:AddToggle({
+    Name = "Bypass Anti Speed/Jump",
+    Default = false,
+    Callback = function(Value) bypassEnabled = Value end
+})
+
+MainTab:AddToggle({
+    Name = "Noclip (Đi xuyên tường)",
+    Default = false,
+    Callback = function(Value) noclipEnabled = Value end
+})
+
+-- TAB 2: FLY & TELEPORT
+local FlyTab = Window:MakeTab({Name = "Fly & TP", Icon = "rbxassetid://4483345998", PremiumOnly = false})
+
+FlyTab:AddToggle({
+    Name = "Bật/Tắt Bay (Fly)",
+    Default = false,
+    Callback = function(Value) toggleFly(Value) end
+})
+
+FlyTab:AddSlider({
+    Name = "Tốc độ Bay",
+    Min = 1, Max = 1000, Default = 50, Color = Color3.fromRGB(0,255,255), Increment = 1, ValueName = "Fly Speed",
+    Callback = function(Value) flyVal = Value end
+})
+
+FlyTab:AddButton({
+    Name = "Lấy Tool Teleport vào Balo",
+    Callback = function()
+        giveTPTool()
+        OrionLib:MakeNotification({Name = "KN HUB", Content = "Đã thêm Teleport Tool vào kho đồ!", Image = "rbxassetid://4483345998", Time = 3})
+    end
+})
+
+-- TAB 3: OPTIMIZATION
+local OptTab = Window:MakeTab({Name = "Fix Lag", Icon = "rbxassetid://4483345998", PremiumOnly = false})
+
+OptTab:AddToggle({
+    Name = "Fix Lag (Ẩn công trình ngoài màn hình)",
+    Default = false,
+    Callback = function(Value)
+        fixLagEnabled = Value
+        if fixLagEnabled then startFixLag() else stopFixLag() end
+    end
+})
+
+OrionLib:Init()
